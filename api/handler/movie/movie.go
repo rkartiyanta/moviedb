@@ -1,7 +1,6 @@
 package movie
 
 import (
-	"context"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -20,7 +19,7 @@ func Request(movieStore core.MovieStore) http.HandlerFunc {
 			return
 		}
 
-		result, err := movieStore.Request(context.Background(), requestParam)
+		result, err := movieStore.Request(requestParam)
 		if err != nil {
 			handler.Write(w, err)
 			return
@@ -37,14 +36,6 @@ func populateRequest(query url.Values) (*core.Request, error) {
 		page = 1
 	}
 
-	action := strings.TrimSpace(query.Get("action"))
-	if action == "" {
-		return nil, pkgerr.NotFoundError{
-			StatusMessage: "The resource you requested could not be found.",
-			StatusCode:    34,
-		}
-	}
-
 	apiKey := strings.TrimSpace(query.Get("api_key"))
 	if apiKey == "" {
 		return nil, pkgerr.UnauthorizeError{
@@ -55,7 +46,6 @@ func populateRequest(query url.Values) (*core.Request, error) {
 	}
 
 	return &core.Request{
-		Action:   action,
 		ApiKey:   apiKey,
 		Language: strings.TrimSpace(query.Get("language")),
 		Page:     page,

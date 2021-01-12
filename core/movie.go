@@ -1,12 +1,7 @@
 package core
 
-import (
-	"context"
-)
-
 type (
 	Request struct {
-		Action   string
 		ApiKey   string
 		Language string
 		Page     int
@@ -14,9 +9,9 @@ type (
 	}
 
 	Response struct {
+		Action       string           `json:"-"`
 		Page         int              `json:"page"`
 		Results      []ResponseResult `json:"results"`
-		Dates        ResponseDates    `json:"dates"`
 		TotalPages   int              `json:"total_pages"`
 		TotalResults int              `json:"total_results"`
 	}
@@ -38,12 +33,13 @@ type (
 		VoteAverage      float32 `json:"vote_average"`
 	}
 
-	ResponseDates struct {
-		Max string `json:"maximum"`
-		Min string `json:"minimum"`
+	ResponseAll struct {
+		ReponseNowPlaying Response `json:"now_playing"`
+		ReponsePopular    Response `json:"popular"`
+		ReponseUpcoming   Response `json:"upcoming"`
 	}
 
 	MovieStore interface {
-		Request(ctx context.Context, form *Request) (*Response, error)
+		Request(form *Request) (*ResponseAll, error)
 	}
 )
